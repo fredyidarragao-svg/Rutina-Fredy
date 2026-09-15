@@ -1,24 +1,33 @@
 package com.fredy.rutina.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.MonitorHeart
+import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fredy.rutina.AppViewModel
 import com.fredy.rutina.data.PlanItem
 import com.fredy.rutina.data.RoutineData
 import com.fredy.rutina.ui.theme.*
+import java.net.URLEncoder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,10 +40,13 @@ fun DayDetailScreen(
     val altToggles by viewModel.altToggles.collectAsState()
     val usaAlt = altToggles[dayId] == true
     val tracking by viewModel.todayTracking.collectAsState()
+    val fatigaAlta by viewModel.fatigaAlta.collectAsState()
     var mostrarTracking by remember { mutableStateOf(false) }
 
     val plan = viewModel.activePlanFor(dayId)
     val titulo = viewModel.activeTitleFor(dayId)
+    val completados = viewModel.completedIndices()
+    val progreso = if (plan.isNotEmpty()) completados.size.coerceAtMost(plan.size) else 0
 
     Scaffold(
         topBar = {
@@ -63,6 +75,45 @@ fun DayDetailScreen(
                 Text(day.duracion + " • " + day.intensidad, color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
             }
 
+            if (fatigaAlta) {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(NaranjaAlerta.copy(alpha = 0.15f))
+                            .padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.Warning, contentDescription = null, tint = NaranjaAlerta)
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            "Tu FC promedio viene alta en tus últimas sesiones. Considera bajar intensidad o activar la rutina ALT hoy.",
+                            color = TextoPrincipal, style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            }
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(Superficie)
+                        .padding(14.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Progreso de hoy", color = TextoPrincipal, fontWeight = FontWeight.Bold)
+                    Text(
+                        "$progreso/${plan.size} completados",
+                        color = if (progreso >= plan.size && plan.isNotEmpty()) VerdeOk else AzulAccion,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
             if (day.esDeporte) {
                 item {
                     Row(
@@ -82,23 +133,12 @@ fun DayDetailScreen(
                 }
             }
 
-            items(plan) { item -> ExerciseRow(item) }
-
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(Superficie)
-                        .padding(14.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Hecho hoy", color = TextoPrincipal, fontWeight = FontWeight.Bold)
-                    Switch(
-                        checked = tracking?.hechoHoy == true,
-                        onCheckedChange = { viewModel.marcarHechoHoy(dayId, it) }
-                    )
-                }
+            itemsIndexed(plan) { index, item ->
+                ExerciseRow(
+                    item = item,
+                    hecho = completados.contains(index),
+                    onToggleHecho = { viewModel.toggleExerciseDone(dayId, index, plan.size) }
+                )
             }
 
             item {
@@ -131,16 +171,17 @@ fun DayDetailScreen(
 }
 
 @Composable
-private fun ExerciseRow(item: PlanItem) {
+private fun ExerciseRow(item: PlanItem, hecho: Boolean, onToggleHecho: () -> Unit) {
     val ejercicio = RoutineData.exerciseById(item.idLib)
     var expandido by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(Superficie)
-            .clickableToggle { expandido = !expandido }
+            .background(if (hecho) VerdeOk.copy(alpha = 0.10f) else Superficie)
+            .clickable { expandido = !expandido }
             .padding(14.dp)
     ) {
         Row(
@@ -168,6 +209,32 @@ private fun ExerciseRow(item: PlanItem) {
             }
             Spacer(Modifier.height(6.dp))
             Text(ejercicio.tecnica, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
+            Spacer(Modifier.height(10.dp))
+            TextButton(onClick = {
+                val query = URLEncoder.encode(ejercicio.nombre + " ejercicio técnica", "UTF-8")
+                val url = "https://www.youtube.com/results?search_query=$query"
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }) {
+                Icon(Icons.Filled.PlayCircle, contentDescription = null, tint = AzulAccion)
+                Spacer(Modifier.width(6.dp))
+                Text("Ver video", color = AzulAccion)
+            }
+        }
+
+        Spacer(Modifier.height(10.dp))
+        Button(
+            onClick = onToggleHecho,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (hecho) VerdeOk else SuperficieClara
+            )
+        ) {
+            Icon(
+                if (hecho) Icons.Filled.CheckCircle else Icons.Filled.RadioButtonUnchecked,
+                contentDescription = null
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(if (hecho) "Realizado" else "Marcar como realizado")
         }
     }
 }
@@ -201,6 +268,3 @@ private fun MetricsSummary(
         filas.forEach { Text(it, color = TextoPrincipal, style = MaterialTheme.typography.bodyMedium) }
     }
 }
-
-private fun Modifier.clickableToggle(onClick: () -> Unit): Modifier =
-    this.clickable(onClick = onClick)

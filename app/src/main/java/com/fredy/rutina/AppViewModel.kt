@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.fredy.rutina.data.AppDatabase
+import com.fredy.rutina.data.PlanItem
 import com.fredy.rutina.data.RoutineData
 import com.fredy.rutina.data.TrackingEntity
 import com.fredy.rutina.health.DailyHealthMetrics
@@ -42,7 +43,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val _hasHealthPermissions = MutableStateFlow(false)
     val hasHealthPermissions: StateFlow<Boolean> = _hasHealthPermissions.asStateFlow()
 
-    /** Semana de rotación 1..4 para el combo bíceps/tríceps, basada en la semana del año. */
+    /** true si la FC promedio de las últimas sesiones registradas viene alta (posible fatiga). */
+    private val _fatigaAlta = MutableStateFlow(false)
+    val fatigaAlta: StateFlow<Boolean> = _fatigaAlta.asStateFlow()
+
+    /** Semana de rotación 1..4 para pecho/bíceps/tríceps/core, basada en la semana del año. */
     val rotationWeek: Int
         get() {
             val weekOfYear = LocalDate.now().get(WeekFields.of(Locale.getDefault()).weekOfYear())
@@ -52,6 +57,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     init {
         _healthAvailability.value = healthConnect.availability()
         loadTodayTracking()
+        evaluarFatiga()
         viewModelScope.launch {
             _hasHealthPermissions.value = runCatching { healthConnect.hasAllPermissions() }.getOrDefault(false)
         }
@@ -67,14 +73,35 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _libraryFilter.value = categoria
     }
 
-    fun activePlanFor(dayId: String): List<com.fredy.rutina.data.PlanItem> {
+    /** Resuelve los slots de rotación (ROT_*) al ejercicio real según la semana actual. */
+    private fun resolveIfRotating(item: PlanItem): PlanItem {
+        if (!item.idLib.startsWith("ROT_")) return item
+        val resolvedId = when (item.idLib) {
+            "ROT_PECHO" -> RoutineData.pechoRotation[rotationWeek] ?: "floor-barra"
+            "ROT_CORE" -> RoutineData.coreRotation[rotationWeek] ?: "rueda"
+            "ROT_TRICEPS1" -> RoutineData.bicepsTricepsRotation[rotationWeek]?.triceps?.getOrNull(0) ?: "patada"
+            "ROT_TRICEPS2" -> RoutineData.bicepsTricepsRotation[rotationWeek]?.triceps?.getOrNull(1) ?: "ext-sobre-cabeza"
+            "ROT_BICEPS1" -> RoutineData.bicepsTricepsRotation[rotationWeek]?.biceps?.getOrNull(0) ?: "curl-barra"
+            "ROT_BICEPS2" -> RoutineData.bicepsTricepsRotation[rotationWeek]?.biceps?.getOrNull(1) ?: "curl-martillo"
+            else -> item.idLib
+        }
+        val ex = RoutineData.exerciseById(resolvedId)
+        return item.copy(
+            idLib = resolvedId,
+            tecnica = ex?.tecnica ?: item.tecnica,
+            rodilla = ex?.rodilla ?: item.rodilla
+        )
+    }
+
+    fun activePlanFor(dayId: String): List<PlanItem> {
         val day = RoutineData.weeklyPlan.find { it.id == dayId } ?: return emptyList()
         val usaAlt = _altToggles.value[dayId] == true
-        return if (day.esDeporte && usaAlt) {
+        val base = if (day.esDeporte && usaAlt) {
             RoutineData.altRoutines[day.planAlternativoId]?.ejercicios ?: day.planNormal
         } else {
             day.planNormal
         }
+        return base.map { resolveIfRotating(it) }
     }
 
     fun activeTitleFor(dayId: String): String {
@@ -91,6 +118,31 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val fecha = LocalDate.now().format(fechaFormatter)
             _todayTracking.value = dao.getByFecha(fecha)
+        }
+    }
+
+    /** Índices (dentro del plan activo de hoy) que ya se marcaron "Realizado". */
+    fun completedIndices(): Set<Int> {
+        val raw = _todayTracking.value?.completados ?: ""
+        return raw.split(",").mapNotNull { it.trim().toIntOrNull() }.toSet()
+    }
+
+    /** Marca/desmarca un ejercicio puntual como realizado; si se completan todos, marca el día hecho. */
+    fun toggleExerciseDone(dayId: String, index: Int, totalItems: Int) {
+        viewModelScope.launch {
+            val fecha = LocalDate.now().format(fechaFormatter)
+            val existente = dao.getByFecha(fecha) ?: TrackingEntity(fecha = fecha, diaId = dayId)
+            val set = existente.completados.split(",").mapNotNull { it.trim().toIntOrNull() }.toMutableSet()
+            if (set.contains(index)) set.remove(index) else set.add(index)
+            val hecho = totalItems > 0 && set.size >= totalItems
+            val actualizado = existente.copy(
+                diaId = dayId,
+                completados = set.sorted().joinToString(","),
+                hechoHoy = hecho,
+                usaAlt = _altToggles.value[dayId] == true
+            )
+            dao.upsert(actualizado)
+            _todayTracking.value = actualizado
         }
     }
 
@@ -125,6 +177,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             )
             dao.upsert(actualizado)
             _todayTracking.value = actualizado
+            evaluarFatiga()
+        }
+    }
+
+    /** Revisa las últimas sesiones con FC registrada; si el promedio viene alto, sugiere bajar intensidad. */
+    private fun evaluarFatiga() {
+        viewModelScope.launch {
+            val recientes = dao.getRecent(4).mapNotNull { it.fcAvg }
+            _fatigaAlta.value = recientes.size >= 2 && recientes.take(3).average() > 155.0
         }
     }
 

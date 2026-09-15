@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LibraryBooks
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,6 +30,8 @@ fun WeekScreen(
     onDayClick: (String) -> Unit,
     onLibraryClick: () -> Unit
 ) {
+    val fatigaAlta by viewModel.fatigaAlta.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -53,11 +56,30 @@ fun WeekScreen(
         ) {
             item {
                 Text(
-                    "Semana de rotación brazos: ${viewModel.rotationWeek}/4",
+                    "Semana de rotación: ${viewModel.rotationWeek}/4",
                     color = TextoSecundario,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
+            }
+            if (fatigaAlta) {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(NaranjaAlerta.copy(alpha = 0.15f))
+                            .padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.Warning, contentDescription = null, tint = NaranjaAlerta)
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            "FC alta en tus últimas sesiones — considera un día más suave.",
+                            color = TextoPrincipal, style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
             }
             items(RoutineData.weeklyPlan) { day ->
                 DayCard(day = day, onClick = { onDayClick(day.id) })

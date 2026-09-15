@@ -1,5 +1,7 @@
 package com.fredy.rutina.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,16 +11,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fredy.rutina.AppViewModel
 import com.fredy.rutina.data.Exercise
 import com.fredy.rutina.data.RoutineData
 import com.fredy.rutina.ui.theme.*
+import java.net.URLEncoder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,6 +72,7 @@ fun LibraryScreen(viewModel: AppViewModel, onBack: () -> Unit) {
 @Composable
 private fun ExerciseCard(ex: Exercise) {
     var expandido by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(14.dp))
@@ -94,6 +100,16 @@ private fun ExerciseCard(ex: Exercise) {
             Text(ex.tecnica, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
             Spacer(Modifier.height(6.dp))
             Text("Rodilla: ${ex.rodilla}", color = VerdeOk, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(8.dp))
+            TextButton(onClick = {
+                val query = URLEncoder.encode(ex.nombre + " ejercicio técnica", "UTF-8")
+                val url = "https://www.youtube.com/results?search_query=$query"
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }) {
+                Icon(Icons.Filled.PlayCircle, contentDescription = null, tint = AzulAccion)
+                Spacer(Modifier.width(6.dp))
+                Text("Ver video", color = AzulAccion)
+            }
         }
     }
 }

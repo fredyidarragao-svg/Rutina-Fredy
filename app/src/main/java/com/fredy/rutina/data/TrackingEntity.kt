@@ -21,5 +21,6 @@ data class TrackingEntity(
     val suenoHoras: Double? = null,
     val pasos: Int? = null,
     val fuenteAuto: Boolean = false,
-    val notas: String = ""
+    val notas: String = "",
+    val completados: String = "" // índices (dentro del plan activo) marcados "Realizado", separados por coma
 )

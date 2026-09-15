@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [TrackingEntity::class], version = 1, exportSchema = false)
+@Database(entities = [TrackingEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun trackingDao(): TrackingDao
@@ -19,7 +19,11 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "rutina_fredy.db"
-                ).build().also { INSTANCE = it }
+                )
+                    // App en desarrollo: si cambia el esquema, se recrea la base en vez de migrar.
+                    // Esto borra el historial guardado hasta ahora (aceptable en esta etapa de pruebas).
+                    .fallbackToDestructiveMigration()
+                    .build().also { INSTANCE = it }
             }
     }
 }

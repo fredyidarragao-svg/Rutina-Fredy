@@ -1,9 +1,10 @@
 package com.fredy.rutina.data
 
 /**
- * Fuente de datos de la rutina de Fredy, tal cual estaba en la versión "V10 Limpia".
- * Todo el contenido (días, series, técnica, notas de rodilla/menisco, biblioteca de
- * ejercicios y rutinas ALT) viene literal de esa versión: no se inventó nada.
+ * Fuente de datos de la rutina de Fredy. Base tomada de la versión "V10 Limpia",
+ * ajustada a sus horarios reales (patinaje lun/mié 1.5h, fútbol vie/sáb 1.25h,
+ * natación dom 50min, casa mar/jue 1h) y ampliada con más ejercicios de biblioteca
+ * y rotación semanal real de pecho/bíceps/tríceps/core en los días de casa.
  */
 object RoutineData {
 
@@ -22,18 +23,18 @@ object RoutineData {
             duracion = "60 min", intensidad = "FUERZA", deporte = null, esDeporte = false,
             planNormal = listOf(
                 PlanItem("bici", "8 min", "-", "FC 120-135", "Prepara rodilla"),
-                PlanItem("floor-barra", "4x12", "90s", "Tumbado suelo pausa 1s", "100% seguro"),
+                PlanItem("ROT_PECHO", "4x12", "90s", "(rota cada semana)", ""),
                 PlanItem("diamante", "3x10", "60s", "Manos diamante", "Sin rodilla"),
-                PlanItem("curl-barra", "4x10", "75s", "Sentado suelo pared", "Sentado"),
-                PlanItem("ext-sobre-cabeza", "4x12", "60s", "Mango kettlebell sobre cabeza", "Sin carga"),
-                PlanItem("rueda", "3x8", "90s", "Rodillas colchoneta", "Toalla"),
+                PlanItem("ROT_BICEPS1", "4x10", "75s", "(rota cada semana)", ""),
+                PlanItem("ROT_TRICEPS1", "4x12", "60s", "(rota cada semana)", ""),
+                PlanItem("ROT_CORE", "3x8", "90s", "(rota cada semana)", ""),
                 PlanItem("bici", "10 min HIIT", "-", "30s/30s x10", "Sentado")
             ),
             planAlternativoId = "CASA"
         ),
         DayPlan(
             id = "mie", dia = "MIÉRCOLES", titulo = "PATINAJE", subtitulo = "Intervalos",
-            duracion = "75 min", intensidad = "MEDIA", deporte = "patinaje", esDeporte = true,
+            duracion = "90 min", intensidad = "MEDIA", deporte = "patinaje", esDeporte = true,
             planNormal = listOf(
                 PlanItem("bici", "60min intervalos", "-", "5 suave /2 fuerte x8", "Calienta 10min"),
                 PlanItem("rueda", "3x30s+8", "40s", "Hollow + rueda corta", "Seguro")
@@ -46,16 +47,16 @@ object RoutineData {
             planNormal = listOf(
                 PlanItem("bici", "6 min", "-", "Activación", "Vasto medial"),
                 PlanItem("remo-barra", "4x12", "90s", "45° barra ombligo", "Semiflex"),
-                PlanItem("curl-martillo", "3x12", "60s", "Neutro mango kettlebell", "Seguro"),
-                PlanItem("patada", "3x12", "45s", "Codo pegado", "Seguro"),
-                PlanItem("rueda", "3x10+30s", "90s", "Rueda + lateral", "Rodilleras"),
+                PlanItem("ROT_BICEPS2", "3x12", "60s", "(rota cada semana)", ""),
+                PlanItem("ROT_TRICEPS2", "3x12", "45s", "(rota cada semana)", ""),
+                PlanItem("ROT_CORE", "3x10+30s", "90s", "(rota cada semana)", ""),
                 PlanItem("bici", "12 min Z2", "-", "130-145FC", "Menisco")
             ),
             planAlternativoId = "CASA"
         ),
         DayPlan(
             id = "vie", dia = "VIERNES", titulo = "FÚTBOL / BICI", subtitulo = "Partido o quema",
-            duracion = "45-90 min", intensidad = "ALTA", deporte = "fútbol", esDeporte = true,
+            duracion = "75 min", intensidad = "ALTA", deporte = "fútbol", esDeporte = true,
             planNormal = listOf(
                 PlanItem("bici", "12 min calent", "-", "5 bici + movilidad + sprints 20m", "Vendaje"),
                 PlanItem("bici", "45 min alt", "-", "Si no hay fútbol Z2 35min", "Mejor menisco"),
@@ -65,7 +66,7 @@ object RoutineData {
         ),
         DayPlan(
             id = "sab", dia = "SÁBADO", titulo = "FÚTBOL", subtitulo = "Competición",
-            duracion = "90 min", intensidad = "ALTA", deporte = "fútbol", esDeporte = true,
+            duracion = "75 min", intensidad = "ALTA", deporte = "fútbol", esDeporte = true,
             planNormal = listOf(
                 PlanItem("bici", "60-90min partido", "-", "Hidrata", "Hielo 10min post si hincha")
             ),
@@ -73,7 +74,7 @@ object RoutineData {
         ),
         DayPlan(
             id = "dom", dia = "DOMINGO", titulo = "NATACIÓN + ABS", subtitulo = "Recuperación",
-            duracion = "60 min", intensidad = "SUAVE", deporte = "natación", esDeporte = true,
+            duracion = "50 min", intensidad = "SUAVE", deporte = "natación", esDeporte = true,
             planNormal = listOf(
                 PlanItem("bici", "30 min natación", "-", "Libre y espalda, sin braza", "Evita braza"),
                 PlanItem("rueda", "3 rondas abs", "60s", "Crunch15 + elev piernas12 + plancha40s + rueda8", "Suelo acolchado")
@@ -223,7 +224,47 @@ object RoutineData {
         Exercise("bici", "Bici Estática HIIT / Z2", "Quema sin impacto", "Vasto medial + glúteo + cardio",
             listOf("Sillín cresta ilíaca, rodilla 25° flex abajo", "Z2 FC 135-150 80-90rpm", "HIIT 30/30 x10 sentado si rodilla"),
             "180min/sem Z2 + 20min HIIT. Planta pie, no punta.",
-            "Mejor ejercicio menisco.", "Déficit", "12-45min", "CORE", false)
+            "Mejor ejercicio menisco.", "Déficit", "12-45min", "CORE", false),
+        Exercise("mountain-climbers", "Escalador (Mountain Climbers)", "Core + cardio", "Recto abdominal + core + hombros",
+            listOf("Posición de plancha alta, manos bajo hombros", "Lleva rodilla al pecho alternando rápido", "Cadera estable, no subas glúteo"),
+            "Ritmo controlado 30-40s, sube el ritmo según nivel. Excelente para bajar abdomen por el componente cardio.",
+            "Bajo impacto en rodilla si el ritmo es moderado.", "Quema abdomen", "3x30-40s • 45s", "CORE", false),
+        Exercise("plancha-toques", "Plancha con Toque de Hombros", "Core anti-rotación", "Core + hombros + estabilidad",
+            listOf("Plancha alta, pies separados ancho cadera", "Toca hombro contrario con mano, alterna", "Cadera lo más quieta posible"),
+            "Si la cadera se mueve mucho, abre más los pies. Ideal complemento a la plancha estática.",
+            "Seguro, sin apoyo de rodilla.", "Estabilidad + abdomen", "3x10 c/lado • 45s", "CORE", false),
+        Exercise("press-militar-manc", "Press Militar con Mancuernas", "Hombro completo", "Deltoide anterior + medio + tríceps",
+            listOf("De pie o sentado, mancuernas a la altura del hombro", "Empuja arriba sin arquear lumbar", "Baja controlado 2s"),
+            "De pie exige más core; sentado contra pared si molesta la espalda baja.",
+            "Sin impacto en rodilla.", "Hombro ancho", "3x12 • 75s", "HOMBROS", false),
+        Exercise("elevacion-lateral", "Elevación Lateral Mancuernas", "Deltoide medio", "Deltoide medio",
+            listOf("Mancuernas a los costados, codos con leve flexión", "Sube hasta la altura del hombro, no más arriba", "Baja lento 2s sin balanceo"),
+            "Peso ligero-moderado; el balanceo del cuerpo quita efectividad. Clave para hombro ancho visualmente.",
+            "Sin impacto en rodilla.", "Hombro definido", "3x12 • 60s", "HOMBROS", false),
+        Exercise("goblet-squat-kb", "Sentadilla Goblet con Mango Kettlebell", "Pierna + core", "Cuádriceps + glúteo + core",
+            listOf("Mango kettlebell sostenido a la altura del pecho", "Baja cadera atrás, rodilla en línea con el pie", "Sube empujando con el talón"),
+            "Controla el rango: solo baja hasta donde la rodilla no moleste, no fuerces profundidad.",
+            "Rango controlado, evita bajar de 90° si molesta.", "Pierna + core", "3x12 • 75s", "PIERNA", true),
+        Exercise("remo-manc-un-brazo", "Remo a un Brazo con Mancuerna", "Espalda unilateral", "Dorsal + romboides + bíceps",
+            listOf("Apoyo de mano y rodilla en silla o banco", "Rema la mancuerna a la cadera, codo pegado", "Aprieta escápula 1s arriba"),
+            "Variante con mancuerna del remo con mango; alterna entre ambos para variedad.",
+            "Apoyo reduce carga en rodilla de apoyo.", "Espalda ancha", "3x12 c/b • 60s", "ESPALDA", false)
+    )
+
+    /** Rotación semanal (4 semanas) del ejercicio principal de pecho en los días de casa. */
+    val pechoRotation: Map<Int, String> = mapOf(
+        1 to "floor-barra",
+        2 to "floor-manc",
+        3 to "floor-cierre",
+        4 to "floor-manc"
+    )
+
+    /** Rotación semanal (4 semanas) del ejercicio final de core en los días de casa. */
+    val coreRotation: Map<Int, String> = mapOf(
+        1 to "rueda",
+        2 to "plancha",
+        3 to "mountain-climbers",
+        4 to "plancha-toques"
     )
 
     /** Rotación de combos bíceps/tríceps: 4 semanas, se repite en ciclo. */
@@ -234,7 +275,7 @@ object RoutineData {
         4 to BicepsTricepsCombo(listOf("patada", "flex-cerrada"), listOf("curl-martillo", "curl-martillo-cruzado"), "Patada + Martillo Cruzado")
     )
 
-    val categorias = listOf("TODOS", "PECHO", "TRICEPS", "BICEPS", "ESPALDA", "CORE")
+    val categorias = listOf("TODOS", "PECHO", "TRICEPS", "BICEPS", "ESPALDA", "HOMBROS", "CORE", "PIERNA")
 
     fun exerciseById(id: String): Exercise? = exerciseLibrary.find { it.id == id }
 }
