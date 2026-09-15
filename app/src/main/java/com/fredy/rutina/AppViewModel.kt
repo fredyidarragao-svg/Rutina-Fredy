@@ -127,18 +127,38 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return raw.split(",").mapNotNull { it.trim().toIntOrNull() }.toSet()
     }
 
-    /** Marca/desmarca un ejercicio puntual como realizado; si se completan todos, marca el día hecho. */
-    fun toggleExerciseDone(dayId: String, index: Int, totalItems: Int) {
+    /** Marca/desmarca un ejercicio puntual (extra o rutina ALT) como realizado. */
+    fun toggleExerciseDone(dayId: String, index: Int, totalItems: Int, requiereActividad: Boolean) {
         viewModelScope.launch {
             val fecha = LocalDate.now().format(fechaFormatter)
             val existente = dao.getByFecha(fecha) ?: TrackingEntity(fecha = fecha, diaId = dayId)
             val set = existente.completados.split(",").mapNotNull { it.trim().toIntOrNull() }.toMutableSet()
             if (set.contains(index)) set.remove(index) else set.add(index)
-            val hecho = totalItems > 0 && set.size >= totalItems
+            val extrasCompletos = totalItems == 0 || set.size >= totalItems
+            val hecho = if (requiereActividad) existente.actividadHecha && extrasCompletos else extrasCompletos
             val actualizado = existente.copy(
                 diaId = dayId,
                 completados = set.sorted().joinToString(","),
                 hechoHoy = hecho,
+                usaAlt = _altToggles.value[dayId] == true
+            )
+            dao.upsert(actualizado)
+            _todayTracking.value = actualizado
+        }
+    }
+
+    /** Marca/desmarca la actividad principal (patinaje/fútbol/natación) como realizada hoy. */
+    fun toggleActividadHecha(dayId: String, totalExtras: Int) {
+        viewModelScope.launch {
+            val fecha = LocalDate.now().format(fechaFormatter)
+            val existente = dao.getByFecha(fecha) ?: TrackingEntity(fecha = fecha, diaId = dayId)
+            val nuevaActividad = !existente.actividadHecha
+            val extrasCompletos = totalExtras == 0 ||
+                existente.completados.split(",").mapNotNull { it.trim().toIntOrNull() }.size >= totalExtras
+            val actualizado = existente.copy(
+                diaId = dayId,
+                actividadHecha = nuevaActividad,
+                hechoHoy = nuevaActividad && extrasCompletos,
                 usaAlt = _altToggles.value[dayId] == true
             )
             dao.upsert(actualizado)

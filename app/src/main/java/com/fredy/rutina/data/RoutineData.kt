@@ -13,7 +13,6 @@ object RoutineData {
             id = "lun", dia = "LUNES", titulo = "PATINAJE", subtitulo = "Resistencia Z2",
             duracion = "90 min", intensidad = "ALTA", deporte = "patinaje", esDeporte = true,
             planNormal = listOf(
-                PlanItem("bici", "90min", "-", "FC 135-150 base", "Evita frenada T"),
                 PlanItem("plancha", "3x40s", "30s", "Core opcional", "Seguro")
             ),
             planAlternativoId = "LUN_ALT"
@@ -36,7 +35,6 @@ object RoutineData {
             id = "mie", dia = "MIÉRCOLES", titulo = "PATINAJE", subtitulo = "Intervalos",
             duracion = "90 min", intensidad = "MEDIA", deporte = "patinaje", esDeporte = true,
             planNormal = listOf(
-                PlanItem("bici", "60min intervalos", "-", "5 suave /2 fuerte x8", "Calienta 10min"),
                 PlanItem("rueda", "3x30s+8", "40s", "Hollow + rueda corta", "Seguro")
             ),
             planAlternativoId = "MIE_ALT"
@@ -55,11 +53,9 @@ object RoutineData {
             planAlternativoId = "CASA"
         ),
         DayPlan(
-            id = "vie", dia = "VIERNES", titulo = "FÚTBOL / BICI", subtitulo = "Partido o quema",
+            id = "vie", dia = "VIERNES", titulo = "FÚTBOL", subtitulo = "Partido",
             duracion = "75 min", intensidad = "ALTA", deporte = "fútbol", esDeporte = true,
             planNormal = listOf(
-                PlanItem("bici", "12 min calent", "-", "5 bici + movilidad + sprints 20m", "Vendaje"),
-                PlanItem("bici", "45 min alt", "-", "Si no hay fútbol Z2 35min", "Mejor menisco"),
                 PlanItem("plancha", "3x12 lado", "30s", "Anti-rotación", "Clave fútbol")
             ),
             planAlternativoId = "VIE_ALT"
@@ -67,16 +63,13 @@ object RoutineData {
         DayPlan(
             id = "sab", dia = "SÁBADO", titulo = "FÚTBOL", subtitulo = "Competición",
             duracion = "75 min", intensidad = "ALTA", deporte = "fútbol", esDeporte = true,
-            planNormal = listOf(
-                PlanItem("bici", "60-90min partido", "-", "Hidrata", "Hielo 10min post si hincha")
-            ),
+            planNormal = emptyList(),
             planAlternativoId = "SAB_ALT"
         ),
         DayPlan(
             id = "dom", dia = "DOMINGO", titulo = "NATACIÓN + ABS", subtitulo = "Recuperación",
             duracion = "50 min", intensidad = "SUAVE", deporte = "natación", esDeporte = true,
             planNormal = listOf(
-                PlanItem("bici", "30 min natación", "-", "Libre y espalda, sin braza", "Evita braza"),
                 PlanItem("rueda", "3 rondas abs", "60s", "Crunch15 + elev piernas12 + plancha40s + rueda8", "Suelo acolchado")
             ),
             planAlternativoId = "DOM_ALT"

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -81,6 +82,16 @@ private fun ExerciseCard(ex: Exercise) {
             .padding(14.dp)
     ) {
         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(CategoryVisuals.colorFor(ex.categoria).copy(alpha = 0.18f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(CategoryVisuals.iconFor(ex.categoria), contentDescription = null, tint = CategoryVisuals.colorFor(ex.categoria))
+            }
+            Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(ex.nombre, color = TextoPrincipal, fontWeight = FontWeight.Bold)
                 Text(ex.subtitulo, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)

@@ -8,16 +8,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.Alignment
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
+import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -43,10 +44,14 @@ fun DayDetailScreen(
     val fatigaAlta by viewModel.fatigaAlta.collectAsState()
     var mostrarTracking by remember { mutableStateOf(false) }
 
+    // Cuando es día de deporte y NO se activó el switch de "no lo voy a hacer",
+    // el plan mostrado son solo los extras opcionales (no la rutina completa).
+    val mostrandoSoloActividad = day.esDeporte && !usaAlt
     val plan = viewModel.activePlanFor(dayId)
     val titulo = viewModel.activeTitleFor(dayId)
     val completados = viewModel.completedIndices()
     val progreso = if (plan.isNotEmpty()) completados.size.coerceAtMost(plan.size) else 0
+    val actividadHecha = tracking?.actividadHecha == true
 
     Scaffold(
         topBar = {
@@ -70,11 +75,6 @@ fun DayDetailScreen(
             contentPadding = PaddingValues(vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            item {
-                Text(titulo, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = TextoPrincipal)
-                Text(day.duracion + " • " + day.intensidad, color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
-            }
-
             if (fatigaAlta) {
                 item {
                     Row(
@@ -95,22 +95,86 @@ fun DayDetailScreen(
                 }
             }
 
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(Superficie)
-                        .padding(14.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Progreso de hoy", color = TextoPrincipal, fontWeight = FontWeight.Bold)
-                    Text(
-                        "$progreso/${plan.size} completados",
-                        color = if (progreso >= plan.size && plan.isNotEmpty()) VerdeOk else AzulAccion,
-                        fontWeight = FontWeight.Bold
-                    )
+            if (mostrandoSoloActividad) {
+                // ---- Tarjeta grande de la actividad del día (patinaje/fútbol/natación) ----
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(AzulAccion.copy(alpha = 0.15f))
+                            .padding(18.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Filled.SportsSoccer, contentDescription = null, tint = AzulAccion)
+                            Spacer(Modifier.width(10.dp))
+                            Text(
+                                day.deporte?.replaceFirstChar { it.uppercase() } ?: day.titulo,
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = TextoPrincipal
+                            )
+                        }
+                        Spacer(Modifier.height(4.dp))
+                        Text(day.subtitulo, color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
+                        Spacer(Modifier.height(10.dp))
+                        Text(
+                            "Duración: ${day.duracion}",
+                            color = AzulAccion,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(Modifier.height(14.dp))
+                        Button(
+                            onClick = { viewModel.toggleActividadHecha(dayId, plan.size) },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (actividadHecha) VerdeOk else SuperficieClara
+                            )
+                        ) {
+                            Icon(
+                                if (actividadHecha) Icons.Filled.CheckCircle else Icons.Filled.RadioButtonUnchecked,
+                                contentDescription = null
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(if (actividadHecha) "Actividad realizada" else "Marcar actividad como realizada")
+                        }
+                    }
+                }
+
+                if (plan.isNotEmpty()) {
+                    item {
+                        Text(
+                            "Extras opcionales — $progreso/${plan.size} completados",
+                            color = TextoSecundario,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                }
+            } else {
+                item {
+                    Text(titulo, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                    Text(day.duracion + " • " + day.intensidad, color = TextoSecundario, style = MaterialTheme.typography.bodyMedium)
+                }
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Superficie)
+                            .padding(14.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Progreso de hoy", color = TextoPrincipal, fontWeight = FontWeight.Bold)
+                        Text(
+                            "$progreso/${plan.size} completados",
+                            color = if (progreso >= plan.size && plan.isNotEmpty()) VerdeOk else AzulAccion,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
 
@@ -125,8 +189,8 @@ fun DayDetailScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column {
-                            Text("Rutina alternativa", color = TextoPrincipal, fontWeight = FontWeight.Bold)
-                            Text("Actívala si no hay ${day.deporte} hoy", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
+                            Text("No voy a hacer ${day.deporte} hoy", color = TextoPrincipal, fontWeight = FontWeight.Bold)
+                            Text("Actívalo para ver la rutina de casa completa", color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
                         }
                         Switch(checked = usaAlt, onCheckedChange = { viewModel.toggleAlt(dayId) })
                     }
@@ -137,7 +201,7 @@ fun DayDetailScreen(
                 ExerciseRow(
                     item = item,
                     hecho = completados.contains(index),
-                    onToggleHecho = { viewModel.toggleExerciseDone(dayId, index, plan.size) }
+                    onToggleHecho = { viewModel.toggleExerciseDone(dayId, index, plan.size, mostrandoSoloActividad) }
                 )
             }
 
@@ -188,11 +252,27 @@ private fun ExerciseRow(item: PlanItem, hecho: Boolean, onToggleHecho: () -> Uni
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            if (ejercicio != null) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(CategoryVisuals.colorFor(ejercicio.categoria).copy(alpha = 0.18f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        CategoryVisuals.iconFor(ejercicio.categoria),
+                        contentDescription = null,
+                        tint = CategoryVisuals.colorFor(ejercicio.categoria)
+                    )
+                }
+                Spacer(Modifier.width(10.dp))
+            }
             Column(modifier = Modifier.weight(1f)) {
                 Text(ejercicio?.nombre ?: item.idLib, color = TextoPrincipal, fontWeight = FontWeight.Bold)
                 Text(item.tecnica, color = TextoSecundario, style = MaterialTheme.typography.bodySmall)
             }
-            Column(horizontalAlignment = androidx.compose.ui.Alignment.End) {
+            Column(horizontalAlignment = Alignment.End) {
                 Text(item.series, color = AzulAccion, fontWeight = FontWeight.Bold)
                 Text("Descanso ${item.descanso}", color = TextoSecundario, style = MaterialTheme.typography.labelSmall)
             }

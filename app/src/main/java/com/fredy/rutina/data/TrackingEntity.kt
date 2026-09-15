@@ -12,6 +12,7 @@ data class TrackingEntity(
     @PrimaryKey val fecha: String, // formato yyyy-MM-dd
     val diaId: String,             // lun, mar, mie, jue, vie, sab, dom
     val hechoHoy: Boolean = false,
+    val actividadHecha: Boolean = false,
     val usaAlt: Boolean = false,
     val fcAvg: Int? = null,
     val fcMax: Int? = null,
