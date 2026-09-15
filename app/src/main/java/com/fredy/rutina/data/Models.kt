@@ -12,8 +12,15 @@ data class Exercise(
     val foco: String,
     val seriesRecom: String,
     val categoria: String,
-    val usaKettlebell: Boolean
-)
+    val usaKettlebell: Boolean,
+    /** id del ejercicio equivalente en la base pública free-exercise-db (dominio público),
+     * usado para mostrar una foto real de miniatura. Null si no hay una coincidencia buena. */
+    val imagenId: String? = null
+) {
+    /** URL de la foto real de la miniatura, o null si no hay coincidencia (se usa ícono de respaldo). */
+    val imagenUrl: String?
+        get() = imagenId?.let { "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/$it/0.jpg" }
+}
 
 /** Una entrada dentro del plan de un día: referencia a un ejercicio + series/descanso de ese día puntual. */
 data class PlanItem(

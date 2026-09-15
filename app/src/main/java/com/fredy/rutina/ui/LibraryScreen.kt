@@ -17,9 +17,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.fredy.rutina.AppViewModel
 import com.fredy.rutina.data.Exercise
 import com.fredy.rutina.data.RoutineData
@@ -84,12 +86,23 @@ private fun ExerciseCard(ex: Exercise) {
         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
             Box(
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(52.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(CategoryVisuals.colorFor(ex.categoria).copy(alpha = 0.18f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(CategoryVisuals.iconFor(ex.categoria), contentDescription = null, tint = CategoryVisuals.colorFor(ex.categoria))
+                if (ex.imagenUrl != null) {
+                    AsyncImage(
+                        model = ex.imagenUrl,
+                        contentDescription = ex.nombre,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(CategoryVisuals.iconFor(ex.categoria), contentDescription = null, tint = CategoryVisuals.colorFor(ex.categoria))
+                }
             }
             Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {

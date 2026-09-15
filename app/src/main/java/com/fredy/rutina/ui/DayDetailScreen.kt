@@ -21,9 +21,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.fredy.rutina.AppViewModel
 import com.fredy.rutina.data.PlanItem
 import com.fredy.rutina.data.RoutineData
@@ -255,16 +257,27 @@ private fun ExerciseRow(item: PlanItem, hecho: Boolean, onToggleHecho: () -> Uni
             if (ejercicio != null) {
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(48.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(CategoryVisuals.colorFor(ejercicio.categoria).copy(alpha = 0.18f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        CategoryVisuals.iconFor(ejercicio.categoria),
-                        contentDescription = null,
-                        tint = CategoryVisuals.colorFor(ejercicio.categoria)
-                    )
+                    if (ejercicio.imagenUrl != null) {
+                        AsyncImage(
+                            model = ejercicio.imagenUrl,
+                            contentDescription = ejercicio.nombre,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(10.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            CategoryVisuals.iconFor(ejercicio.categoria),
+                            contentDescription = null,
+                            tint = CategoryVisuals.colorFor(ejercicio.categoria)
+                        )
+                    }
                 }
                 Spacer(Modifier.width(10.dp))
             }
