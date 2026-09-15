@@ -5,6 +5,9 @@ on:
     branches: [ "main" ]
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,16 +21,31 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Verificar Android SDK preinstalado
-        run: echo "ANDROID_HOME=$ANDROID_HOME" && ls "$ANDROID_HOME/platforms" || true
-
       - name: Aceptar licencias del SDK
         run: yes | sdkmanager --licenses || true
 
       - name: Compilar APK debug
-        run: gradle assembleDebug --no-daemon
+        shell: bash
+        run: |
+          gradle assembleDebug --no-daemon 2>&1 | tee /tmp/build.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Subir log si falla
+        if: failure()
+        shell: bash
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          git config user.email "ci@local"
+          git config user.name "CI Bot"
+          git checkout --orphan build-logs-tmp
+          git rm -rf . > /dev/null 2>&1 || true
+          cp /tmp/build.log ./build.log
+          git add build.log
+          git commit -m "log de build fallido"
+          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:build-logs
 
       - name: Subir APK como artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: rutina-fredy-apk
