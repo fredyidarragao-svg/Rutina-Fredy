@@ -1,0 +1,240 @@
+package com.fredy.rutina.data
+
+/**
+ * Fuente de datos de la rutina de Fredy, tal cual estaba en la versión "V10 Limpia".
+ * Todo el contenido (días, series, técnica, notas de rodilla/menisco, biblioteca de
+ * ejercicios y rutinas ALT) viene literal de esa versión: no se inventó nada.
+ */
+object RoutineData {
+
+    val weeklyPlan: List<DayPlan> = listOf(
+        DayPlan(
+            id = "lun", dia = "LUNES", titulo = "PATINAJE", subtitulo = "Resistencia Z2",
+            duracion = "90 min", intensidad = "ALTA", deporte = "patinaje", esDeporte = true,
+            planNormal = listOf(
+                PlanItem("bici", "90min", "-", "FC 135-150 base", "Evita frenada T"),
+                PlanItem("plancha", "3x40s", "30s", "Core opcional", "Seguro")
+            ),
+            planAlternativoId = "LUN_ALT"
+        ),
+        DayPlan(
+            id = "mar", dia = "MARTES", titulo = "CASA 60min", subtitulo = "PECHO SUELO + BRAZOS + BICI",
+            duracion = "60 min", intensidad = "FUERZA", deporte = null, esDeporte = false,
+            planNormal = listOf(
+                PlanItem("bici", "8 min", "-", "FC 120-135", "Prepara rodilla"),
+                PlanItem("floor-barra", "4x12", "90s", "Tumbado suelo pausa 1s", "100% seguro"),
+                PlanItem("diamante", "3x10", "60s", "Manos diamante", "Sin rodilla"),
+                PlanItem("curl-barra", "4x10", "75s", "Sentado suelo pared", "Sentado"),
+                PlanItem("ext-sobre-cabeza", "4x12", "60s", "Mango kettlebell sobre cabeza", "Sin carga"),
+                PlanItem("rueda", "3x8", "90s", "Rodillas colchoneta", "Toalla"),
+                PlanItem("bici", "10 min HIIT", "-", "30s/30s x10", "Sentado")
+            ),
+            planAlternativoId = "CASA"
+        ),
+        DayPlan(
+            id = "mie", dia = "MIÉRCOLES", titulo = "PATINAJE", subtitulo = "Intervalos",
+            duracion = "75 min", intensidad = "MEDIA", deporte = "patinaje", esDeporte = true,
+            planNormal = listOf(
+                PlanItem("bici", "60min intervalos", "-", "5 suave /2 fuerte x8", "Calienta 10min"),
+                PlanItem("rueda", "3x30s+8", "40s", "Hollow + rueda corta", "Seguro")
+            ),
+            planAlternativoId = "MIE_ALT"
+        ),
+        DayPlan(
+            id = "jue", dia = "JUEVES", titulo = "CASA 60min", subtitulo = "BRAZOS + ESPALDA + ABS",
+            duracion = "60 min", intensidad = "FUERZA", deporte = null, esDeporte = false,
+            planNormal = listOf(
+                PlanItem("bici", "6 min", "-", "Activación", "Vasto medial"),
+                PlanItem("remo-barra", "4x12", "90s", "45° barra ombligo", "Semiflex"),
+                PlanItem("curl-martillo", "3x12", "60s", "Neutro mango kettlebell", "Seguro"),
+                PlanItem("patada", "3x12", "45s", "Codo pegado", "Seguro"),
+                PlanItem("rueda", "3x10+30s", "90s", "Rueda + lateral", "Rodilleras"),
+                PlanItem("bici", "12 min Z2", "-", "130-145FC", "Menisco")
+            ),
+            planAlternativoId = "CASA"
+        ),
+        DayPlan(
+            id = "vie", dia = "VIERNES", titulo = "FÚTBOL / BICI", subtitulo = "Partido o quema",
+            duracion = "45-90 min", intensidad = "ALTA", deporte = "fútbol", esDeporte = true,
+            planNormal = listOf(
+                PlanItem("bici", "12 min calent", "-", "5 bici + movilidad + sprints 20m", "Vendaje"),
+                PlanItem("bici", "45 min alt", "-", "Si no hay fútbol Z2 35min", "Mejor menisco"),
+                PlanItem("plancha", "3x12 lado", "30s", "Anti-rotación", "Clave fútbol")
+            ),
+            planAlternativoId = "VIE_ALT"
+        ),
+        DayPlan(
+            id = "sab", dia = "SÁBADO", titulo = "FÚTBOL", subtitulo = "Competición",
+            duracion = "90 min", intensidad = "ALTA", deporte = "fútbol", esDeporte = true,
+            planNormal = listOf(
+                PlanItem("bici", "60-90min partido", "-", "Hidrata", "Hielo 10min post si hincha")
+            ),
+            planAlternativoId = "SAB_ALT"
+        ),
+        DayPlan(
+            id = "dom", dia = "DOMINGO", titulo = "NATACIÓN + ABS", subtitulo = "Recuperación",
+            duracion = "60 min", intensidad = "SUAVE", deporte = "natación", esDeporte = true,
+            planNormal = listOf(
+                PlanItem("bici", "30 min natación", "-", "Libre y espalda, sin braza", "Evita braza"),
+                PlanItem("rueda", "3 rondas abs", "60s", "Crunch15 + elev piernas12 + plancha40s + rueda8", "Suelo acolchado")
+            ),
+            planAlternativoId = "DOM_ALT"
+        )
+    )
+
+    val altRoutines: Map<String, AltRoutine> = mapOf(
+        "LUN_ALT" to AltRoutine(
+            titulo = "LUNES ALT • Pecho + Tríceps + Bici",
+            subtitulo = "No patinaje hoy → 60min fuerza plano + quema",
+            ejercicios = listOf(
+                PlanItem("bici", "10 min Z1", "-", "Calentamiento suave 120-130FC", "Ideal"),
+                PlanItem("floor-barra", "4x12", "90s", "Pausa 1s suelo, pecho superior", "100% seguro"),
+                PlanItem("floor-manc", "3x12", "75s", "Mango kettlebell como mancuerna", "Seguro"),
+                PlanItem("diamante", "3x10", "60s", "Definición interna", "Seguro"),
+                PlanItem("ext-sobre-cabeza", "4x12", "60s", "Mango kettlebell sobre cabeza", "Sentado"),
+                PlanItem("patada", "3x12", "45s", "Tríceps corte", "Seguro"),
+                PlanItem("bici", "12 min HIIT 30/30", "-", "Sprint 90% + suave", "Sentado")
+            )
+        ),
+        "MIE_ALT" to AltRoutine(
+            titulo = "MIÉRCOLES ALT • Brazos Completa + Core",
+            subtitulo = "No patinaje hoy → bíceps con mancuernas + tríceps",
+            ejercicios = listOf(
+                PlanItem("bici", "6 min activación", "-", "Z1 suave", "Prepara"),
+                PlanItem("curl-barra", "4x10", "75s", "Sentado suelo", "Seguro"),
+                PlanItem("curl-martillo", "3x12", "60s", "Martillo neutro mango", "Seguro"),
+                PlanItem("curl-conc-kb", "3x10 c/b", "60s", "Concentrado mango kettlebell", "Sentado"),
+                PlanItem("ext-sobre-cabeza", "3x12", "60s", "Cabeza larga", "Sentado"),
+                PlanItem("flex-cerrada", "3x12", "60s", "Peso corporal tríceps", "Seguro"),
+                PlanItem("rueda", "3x10", "90s", "Rueda + plancha", "Toalla"),
+                PlanItem("bici", "8 min Z2", "-", "Quema", "Menisco")
+            )
+        ),
+        "VIE_ALT" to AltRoutine(
+            titulo = "VIERNES ALT • Circuito Quema Kettlebell + Bici",
+            subtitulo = "No fútbol hoy → 60min grasa con mango",
+            ejercicios = listOf(
+                PlanItem("bici", "5 min Z1", "-", "Calent", "Suave"),
+                PlanItem("swing-suave-kb", "4x15", "60s", "Hasta pecho, cadera bisagra, <90° rodilla", "90° max sin impacto"),
+                PlanItem("remo-1mano-kb", "3x12 c/b", "60s", "Mango kettlebell remo", "Apoyo"),
+                PlanItem("floor-manc", "3x12", "60s", "Press con mango", "Suelo"),
+                PlanItem("flex-cerrada", "3x12", "45s", "Tríceps peso corporal", "Seguro"),
+                PlanItem("plancha", "3x40s+30s", "30s", "Core anti-rotación", "Seguro"),
+                PlanItem("bici", "15 min Z2", "-", "135-150FC constante", "Perfecto")
+            )
+        ),
+        "SAB_ALT" to AltRoutine(
+            titulo = "SÁBADO ALT • Full Body Kettlebell Suave",
+            subtitulo = "No fútbol hoy → recuperación + fuerza",
+            ejercicios = listOf(
+                PlanItem("bici", "8 min Z1 suave", "-", "Recuperación", "Muy suave"),
+                PlanItem("remo-1mano-kb", "3x12", "75s", "Espalda con mango", "Seguro"),
+                PlanItem("curl-conc-kb", "3x10 c/b", "60s", "Bíceps pico mango", "Sentado"),
+                PlanItem("floor-barra", "3x12", "75s", "Pecho suelo", "Seguro"),
+                PlanItem("swing-suave-kb", "3x15", "60s", "Swing suave glúteo", "<90°"),
+                PlanItem("rueda", "2x10", "90s", "Core corto", "Toalla"),
+                PlanItem("bici", "10 min Z1", "-", "Enfriamiento", "Suave")
+            )
+        ),
+        "DOM_ALT" to AltRoutine(
+            titulo = "DOMINGO ALT • Espalda + Bíceps + Abs",
+            subtitulo = "No natación hoy → fuerza tirón + bíceps",
+            ejercicios = listOf(
+                PlanItem("bici", "6 min Z1", "-", "Activación", "Suave"),
+                PlanItem("remo-1mano-kb", "4x12 c/b", "60s", "Mango kettlebell", "Apoyo"),
+                PlanItem("remo-barra", "4x12", "90s", "Barra 45°", "Semiflex"),
+                PlanItem("curl-barra", "4x10", "75s", "Barra sentado", "Sentado"),
+                PlanItem("curl-martillo-cruzado", "3x10 c/b", "60s", "Martillo cruzado mango", "Seguro"),
+                PlanItem("rueda", "3x12", "60s", "Abs completo", "Suelo"),
+                PlanItem("plancha", "2x40s", "30s", "Plancha", "Seguro")
+            )
+        )
+    )
+
+    val exerciseLibrary: List<Exercise> = listOf(
+        Exercise("floor-barra", "Floor Press Barra 25kg", "Pecho plano • sin banco", "Pectoral clavicular + tríceps",
+            listOf("Tumbado rodillas 90°, lumbar pegada", "Barra baja hasta tríceps toque suelo, pausa 1s", "Sube explosivo codos 45°"),
+            "Tempo 2-1-1. Ideal para pecho plano, quita efecto senos. 25kg con pausa = suficiente.",
+            "100% seguro suelo.", "Pecho firme", "4x12 • 90s", "PECHO", false),
+        Exercise("floor-manc", "Floor Press Mancuernas", "Pecho + control", "Pectoral + tríceps + core",
+            listOf("Dos mancuernas o discos con mango kettlebell como mancuerna", "Baja hasta codos toquen suelo", "Sube sin chocar mancuernas"),
+            "Si usas mango kettlebell, agarre neutro = más pecho interno y seguro muñeca.",
+            "Seguro total en suelo.", "Pecho denso", "3x12 • 75s", "PECHO", true),
+        Exercise("diamante", "Flexión Diamante", "Pecho interno", "Pectoral interno + tríceps largo",
+            listOf("Manos diamante bajo esternón", "Codos 45°, tabla perfecta", "Pecho roza manos 2s bajada"),
+            "Regresión rodillas con toalla si cuesta.",
+            "Sin rodilla.", "Definición central", "3x10 • 60s", "PECHO", false),
+        Exercise("ext-sobre-cabeza", "Extensión Sobre Cabeza Mancuerna", "Tríceps largo 60% brazo", "Tríceps cabeza larga",
+            listOf("Sentado suelo piernas cruzadas, mancuerna/mango sobre cabeza", "Codos al frente, baja a 90° detrás cabeza", "Solo antebrazo extiende"),
+            "Mango kettlebell perfecto: peso centrado, agarre seguro. Clave para brazo grande.",
+            "Sentado suelo 0 carga.", "Brazo grande", "4x12 • 60s", "TRICEPS", true),
+        Exercise("patada", "Patada Tríceps Mancuerna", "Definición + corte", "Tríceps lateral + largo",
+            listOf("Inclinado 45°, rodilla semiflex, espalda recta", "Codo pegado torso, extiende completo atrás", "Aprieta 1s arriba"),
+            "Mango kettlebell como mancuerna pesada, controla balance.",
+            "Semiflex, peso talones.", "Tríceps marcado", "3x12 c/b • 45s", "TRICEPS", true),
+        Exercise("flex-cerrada", "Flexión Cerrada Tríceps", "Peso corporal", "Tríceps + pecho interno",
+            listOf("Manos bajo hombros, codos pegados costillas", "Baja pecho a manos", "Sube sin abrir codos"),
+            "Más tríceps que flexión normal. Ideal sin material.",
+            "Seguro.", "Fuerza tríceps", "3x12 • 60s", "TRICEPS", false),
+        Exercise("floor-cierre", "Floor Press Cierre Tríceps", "Tríceps + pecho", "Tríceps + pectoral interno",
+            listOf("Barra agarre cerrado hombros ancho", "Codos pegados, barra a pecho bajo", "Extensión tríceps arriba"),
+            "Versión tríceps del floor press. 25kg es mucho aquí, controla.",
+            "Suelo.", "Pecho-tríceps", "4x10 • 75s", "TRICEPS", false),
+        Exercise("frances-suelo", "Press Francés Suelo Barra", "Tríceps completo", "Tríceps las 3 cabezas",
+            listOf("Tumbado suelo, barra sobre pecho", "Baja frente a frente, codos 90°", "Extiende sin mover hombro"),
+            "Suelo evita sobre-extensión. Si molesta codo, baja solo a 100°.",
+            "Total seguridad.", "Masa tríceps", "3x12 • 60s", "TRICEPS", false),
+        Exercise("curl-barra", "Curl Barra 25kg", "Bíceps masa", "Bíceps largo/corto + braquial",
+            listOf("De pie espalda pared o sentado suelo", "Codos costillas, solo antebrazo", "Sube 1s aprieta, baja 2s"),
+            "25kg pesado, sin balanceo. Sentado suelo mejor para aislar.",
+            "Sentado protege 100%.", "Volumen bíceps", "4x10 • 75s", "BICEPS", false),
+        Exercise("curl-martillo", "Curl Martillo Mancuernas", "Braquial + antebrazo", "Braquial + bíceps + supinador",
+            listOf("Agarre neutro martillo", "Codos pegados, sube sin girar", "Baja lento 2s"),
+            "Mango kettlebell en cada mano o 1 pesada alterna. Engrosa brazo visto de frente.",
+            "Seguro.", "Brazo ancho", "3x12 • 60s", "BICEPS", true),
+        Exercise("curl-conc-kb", "Curl Concentrado 1 Mano con Mango Kettlebell", "Pico bíceps • herramienta clave", "Bíceps pico + braquial",
+            listOf("Sentado, codo apoyado muslo interno", "Mango kettlebell agarre firme, discos ajustados", "Curl lento 2s arriba, aprieta 1s, baja 3s"),
+            "Tu mango es perfecto aquí: peso regulable, agarre grueso = más activación. 8-12kg por lado ideal.",
+            "Sentado, sin carga rodilla.", "Pico bíceps", "3x10 c/b • 60s", "BICEPS", true),
+        Exercise("curl-martillo-cruzado", "Curl Martillo Cruzado", "Cabeza larga bíceps", "Bíceps cabeza larga + braquial",
+            listOf("Mancuerna cruza hacia hombro opuesto", "Codo fijo, antebrazo cruza", "Baja controlado"),
+            "Variante para cabeza larga, da altura al bíceps. Mango kettlebell agarre neutro.",
+            "Seguro.", "Altura bíceps", "3x10 c/b • 60s", "BICEPS", true),
+        Exercise("remo-1mano-kb", "Remo 1 Mano con Mango Kettlebell", "Dorsal + postura • mango", "Dorsal + romboides + bíceps",
+            listOf("Rodilla y mano en silla/suelo, espalda recta", "Mango kettlebell rema a ombligo", "Aprieta escápula 1s"),
+            "Usa tu foto: mismo gesto. Peso ajustable = progresión perfecta. Ideal para V-taper.",
+            "Apoyo reduce carga rodilla.", "Espalda ancha", "4x12 c/b • 60s", "ESPALDA", true),
+        Exercise("remo-barra", "Remo con Barra Suelo 25kg", "Espalda + postura", "Dorsal + romboides",
+            listOf("Inclinado 45°, rodillas semiflex, barra colgando", "Rema a ombligo codos pegados", "Baja 2s sin caer"),
+            "Suelo evita banco. Si lumbar molesta, 1 brazo con mango.",
+            "Semiflex, peso talones.", "V-taper", "4x12 • 90s", "ESPALDA", false),
+        Exercise("swing-suave-kb", "Swing Suave Kettlebell hasta Pecho", "Quema grasa sin impacto", "Glúteo + core + dorsal",
+            listOf("Mango kettlebell 10-16kg, pies ancho hombros", "Bisagra cadera, no sentadilla profunda <90°", "Swing hasta pecho, no overhead, rodillas 20° flex"),
+            "Suave para menisco: sin rebote rodilla, fuerza desde glúteo. Hasta pecho = protege hombro y rodilla.",
+            "90° max, sin impacto. Ideal.", "Quema + glúteo", "4x15 • 60s", "ESPALDA", true),
+        Exercise("rueda", "Rueda Abdominal", "Core anti-extensión", "Recto + transverso + dorsal",
+            listOf("Rodillas colchoneta gruesa", "Rueda al frente sin arquear lumbar", "Vuelve con abdomen"),
+            "Rango corto inicio +5cm/semana.",
+            "Toalla triple.", "Core patinaje", "3x8 • 90s", "CORE", false),
+        Exercise("plancha", "Plancha Suelo + Lateral", "Core estable", "Core completo + hombros",
+            listOf("Codos bajo hombros, glúteo apretado 40s", "Lateral 30s cada lado", "Respiración normal"),
+            "Base para todo. Si rueda duele lumbar, solo plancha.",
+            "Seguro.", "Estabilidad", "3x40s+30s", "CORE", false),
+        Exercise("bici", "Bici Estática HIIT / Z2", "Quema sin impacto", "Vasto medial + glúteo + cardio",
+            listOf("Sillín cresta ilíaca, rodilla 25° flex abajo", "Z2 FC 135-150 80-90rpm", "HIIT 30/30 x10 sentado si rodilla"),
+            "180min/sem Z2 + 20min HIIT. Planta pie, no punta.",
+            "Mejor ejercicio menisco.", "Déficit", "12-45min", "CORE", false)
+    )
+
+    /** Rotación de combos bíceps/tríceps: 4 semanas, se repite en ciclo. */
+    val bicepsTricepsRotation: Map<Int, BicepsTricepsCombo> = mapOf(
+        1 to BicepsTricepsCombo(listOf("ext-sobre-cabeza", "patada"), listOf("curl-barra", "curl-martillo"), "Patada Tríceps + Curl Barra"),
+        2 to BicepsTricepsCombo(listOf("flex-cerrada", "floor-cierre"), listOf("curl-conc-kb", "curl-martillo-cruzado"), "Flex Cerrada + Curl Concentrado Mango"),
+        3 to BicepsTricepsCombo(listOf("frances-suelo", "ext-sobre-cabeza"), listOf("curl-barra", "curl-conc-kb"), "Francés Suelo + Curl Concentrado Mango"),
+        4 to BicepsTricepsCombo(listOf("patada", "flex-cerrada"), listOf("curl-martillo", "curl-martillo-cruzado"), "Patada + Martillo Cruzado")
+    )
+
+    val categorias = listOf("TODOS", "PECHO", "TRICEPS", "BICEPS", "ESPALDA", "CORE")
+
+    fun exerciseById(id: String): Exercise? = exerciseLibrary.find { it.id == id }
+}
