@@ -16,12 +16,14 @@ data class TrackingEntity(
     val usaAlt: Boolean = false,
     val fcAvg: Int? = null,
     val fcMax: Int? = null,
+    val fcReposo: Int? = null,
     val calorias: Int? = null,
     val tiempoMin: Int? = null,
     val distanciaKm: Double? = null,
     val suenoHoras: Double? = null,
     val pasos: Int? = null,
     val fuenteAuto: Boolean = false,
+    val sinActividad: Boolean = false,
     val notas: String = "",
     val completados: String = "" // índices (dentro del plan activo) marcados "Realizado", separados por coma
 )

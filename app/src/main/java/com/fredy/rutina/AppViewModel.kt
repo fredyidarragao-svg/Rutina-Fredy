@@ -181,19 +181,22 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         dayId: String,
         fcAvg: Int?,
         fcMax: Int?,
+        fcReposo: Int?,
         calorias: Int?,
         tiempoMin: Int?,
         distanciaKm: Double?,
         suenoHoras: Double?,
         pasos: Int?,
-        fuenteAuto: Boolean
+        fuenteAuto: Boolean,
+        sinActividad: Boolean = false
     ) {
         viewModelScope.launch {
             val fecha = LocalDate.now().format(fechaFormatter)
             val existente = dao.getByFecha(fecha)
             val actualizado = (existente ?: TrackingEntity(fecha = fecha, diaId = dayId)).copy(
-                fcAvg = fcAvg, fcMax = fcMax, calorias = calorias, tiempoMin = tiempoMin,
-                distanciaKm = distanciaKm, suenoHoras = suenoHoras, pasos = pasos, fuenteAuto = fuenteAuto
+                fcAvg = fcAvg, fcMax = fcMax, fcReposo = fcReposo, calorias = calorias, tiempoMin = tiempoMin,
+                distanciaKm = distanciaKm, suenoHoras = suenoHoras, pasos = pasos, fuenteAuto = fuenteAuto,
+                sinActividad = sinActividad
             )
             dao.upsert(actualizado)
             _todayTracking.value = actualizado
@@ -201,11 +204,34 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /** Revisa las últimas sesiones con FC registrada; si el promedio viene alto, sugiere bajar intensidad. */
+    /** id del día real de hoy (lun..dom) según la fecha del sistema, para registrar sin entrar a un día. */
+    fun todayDayId(): String {
+        return when (LocalDate.now().dayOfWeek) {
+            java.time.DayOfWeek.MONDAY -> "lun"
+            java.time.DayOfWeek.TUESDAY -> "mar"
+            java.time.DayOfWeek.WEDNESDAY -> "mie"
+            java.time.DayOfWeek.THURSDAY -> "jue"
+            java.time.DayOfWeek.FRIDAY -> "vie"
+            java.time.DayOfWeek.SATURDAY -> "sab"
+            java.time.DayOfWeek.SUNDAY -> "dom"
+        }
+    }
+
+    /** Revisa las últimas sesiones con FC en reposo registrada (más confiable que la FC de entrenamiento);
+     * si viene consistentemente alta respecto al resto, sugiere bajar intensidad. Si no hay suficientes
+     * lecturas de FC en reposo, usa la FC promedio de entrenamiento como respaldo. */
     private fun evaluarFatiga() {
         viewModelScope.launch {
-            val recientes = dao.getRecent(4).mapNotNull { it.fcAvg }
-            _fatigaAlta.value = recientes.size >= 2 && recientes.take(3).average() > 155.0
+            val recientes = dao.getRecent(6)
+            val reposo = recientes.mapNotNull { it.fcReposo }
+            if (reposo.size >= 3) {
+                val ultima = reposo.first()
+                val base = reposo.drop(1).average()
+                _fatigaAlta.value = ultima > base + 6.0
+            } else {
+                val entrenamiento = recientes.mapNotNull { it.fcAvg }
+                _fatigaAlta.value = entrenamiento.size >= 2 && entrenamiento.take(3).average() > 155.0
+            }
         }
     }
 

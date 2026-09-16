@@ -221,8 +221,13 @@ fun DayDetailScreen(
             }
 
             tracking?.let { t ->
-                if (t.fcAvg != null || t.pasos != null || t.calorias != null) {
-                    item { MetricsSummary(t.fcAvg, t.fcMax, t.calorias, t.tiempoMin, t.distanciaKm, t.suenoHoras, t.pasos, t.fuenteAuto) }
+                if (t.fcAvg != null || t.pasos != null || t.calorias != null || t.fcReposo != null || t.sinActividad) {
+                    item {
+                        MetricsSummary(
+                            t.fcReposo, t.fcAvg, t.fcMax, t.calorias, t.tiempoMin,
+                            t.distanciaKm, t.suenoHoras, t.pasos, t.fuenteAuto, t.sinActividad
+                        )
+                    }
                 }
             }
         }
@@ -342,8 +347,8 @@ private fun ExerciseRow(item: PlanItem, hecho: Boolean, onToggleHecho: () -> Uni
 
 @Composable
 private fun MetricsSummary(
-    fcAvg: Int?, fcMax: Int?, calorias: Int?, tiempoMin: Int?,
-    distanciaKm: Double?, suenoHoras: Double?, pasos: Int?, fuenteAuto: Boolean
+    fcReposo: Int?, fcAvg: Int?, fcMax: Int?, calorias: Int?, tiempoMin: Int?,
+    distanciaKm: Double?, suenoHoras: Double?, pasos: Int?, fuenteAuto: Boolean, sinActividad: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -356,8 +361,13 @@ private fun MetricsSummary(
             if (fuenteAuto) "Desde el reloj (Health Connect)" else "Registro manual",
             color = TextoSecundario, style = MaterialTheme.typography.labelSmall
         )
+        if (sinActividad) {
+            Spacer(Modifier.height(4.dp))
+            Text("Día sin actividad física (registrado)", color = NaranjaAlerta, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+        }
         Spacer(Modifier.height(6.dp))
         val filas = listOfNotNull(
+            fcReposo?.let { "FC en reposo: $it" },
             fcAvg?.let { "FC promedio: $it" },
             fcMax?.let { "FC máx: $it" },
             calorias?.let { "Calorías: $it" },

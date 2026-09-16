@@ -2,12 +2,16 @@ package com.fredy.rutina.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fredy.rutina.AppViewModel
 import com.fredy.rutina.health.HealthConnectAvailability
@@ -26,9 +30,11 @@ fun TrackingSheet(
     val hasPermissions by viewModel.hasHealthPermissions.collectAsState()
     var cargando by remember { mutableStateOf(false) }
     var fuenteAuto by remember { mutableStateOf(false) }
+    var sinActividad by remember { mutableStateOf(false) }
 
     var fcAvg by remember { mutableStateOf("") }
     var fcMax by remember { mutableStateOf("") }
+    var fcReposo by remember { mutableStateOf("") }
     var calorias by remember { mutableStateOf("") }
     var tiempo by remember { mutableStateOf("") }
     var distancia by remember { mutableStateOf("") }
@@ -45,10 +51,25 @@ fun TrackingSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(max = 560.dp)
+                .verticalScroll(rememberScrollState())
+                .imePadding()
                 .padding(20.dp)
         ) {
             Text("Registrar métricas de hoy", style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(12.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Hoy no hice actividad física", fontWeight = FontWeight.Bold)
+                    Text("Día ocupado — igual puedes guardar pasos/sueño del reloj", style = MaterialTheme.typography.bodySmall)
+                }
+                Switch(checked = sinActividad, onCheckedChange = { sinActividad = it })
+            }
+            Spacer(Modifier.height(16.dp))
 
             when {
                 availability != HealthConnectAvailability.DISPONIBLE -> {
@@ -91,9 +112,11 @@ fun TrackingSheet(
 
             Spacer(Modifier.height(16.dp))
 
-            OutlinedTextField(value = fcAvg, onValueChange = { fcAvg = it; fuenteAuto = false }, label = { Text("FC promedio") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = fcReposo, onValueChange = { fcReposo = it }, label = { Text("FC en reposo (al despertar)") }, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(8.dp))
-            OutlinedTextField(value = fcMax, onValueChange = { fcMax = it; fuenteAuto = false }, label = { Text("FC máxima") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = fcAvg, onValueChange = { fcAvg = it; fuenteAuto = false }, label = { Text("FC promedio (entrenamiento)") }, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(value = fcMax, onValueChange = { fcMax = it; fuenteAuto = false }, label = { Text("FC máxima (entrenamiento)") }, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(value = calorias, onValueChange = { calorias = it; fuenteAuto = false }, label = { Text("Calorías") }, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(8.dp))
@@ -114,12 +137,14 @@ fun TrackingSheet(
                         dayId = dayId,
                         fcAvg = fcAvg.toIntOrNull(),
                         fcMax = fcMax.toIntOrNull(),
+                        fcReposo = fcReposo.toIntOrNull(),
                         calorias = calorias.toIntOrNull(),
                         tiempoMin = tiempo.toIntOrNull(),
                         distanciaKm = distancia.toDoubleOrNull(),
                         suenoHoras = sueno.toDoubleOrNull(),
                         pasos = pasos.toIntOrNull(),
-                        fuenteAuto = fuenteAuto
+                        fuenteAuto = fuenteAuto,
+                        sinActividad = sinActividad
                     )
                     onDismiss()
                 }

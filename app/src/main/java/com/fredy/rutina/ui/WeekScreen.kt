@@ -8,11 +8,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LibraryBooks
+import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +30,7 @@ fun WeekScreen(
     onLibraryClick: () -> Unit
 ) {
     val fatigaAlta by viewModel.fatigaAlta.collectAsState()
+    var mostrarTracking by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -81,10 +81,28 @@ fun WeekScreen(
                     }
                 }
             }
+            item {
+                OutlinedButton(
+                    onClick = { mostrarTracking = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Filled.MonitorHeart, contentDescription = null, tint = AzulAccion)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Registrar datos de hoy (sin entrar a una rutina)", color = AzulAccion)
+                }
+            }
             items(RoutineData.weeklyPlan) { day ->
                 DayCard(day = day, onClick = { onDayClick(day.id) })
             }
         }
+    }
+
+    if (mostrarTracking) {
+        TrackingSheet(
+            viewModel = viewModel,
+            dayId = viewModel.todayDayId(),
+            onDismiss = { mostrarTracking = false }
+        )
     }
 }
 
