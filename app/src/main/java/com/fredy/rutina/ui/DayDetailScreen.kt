@@ -46,6 +46,7 @@ fun DayDetailScreen(
     val tracking by viewModel.todayTracking.collectAsState()
     val fatigaAlta by viewModel.fatigaAlta.collectAsState()
     var mostrarTracking by remember { mutableStateOf(false) }
+    val esHoy = dayId == viewModel.todayDayId()
 
     // Cuando es día de deporte y NO se activó el switch de "no lo voy a hacer",
     // el plan mostrado son solo los extras opcionales (no la rutina completa).
@@ -78,6 +79,24 @@ fun DayDetailScreen(
             contentPadding = PaddingValues(vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            if (!esHoy) {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(SuperficieClara)
+                            .padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Vista previa de ${day.dia.lowercase()}. Solo se puede marcar como realizado el día que corresponde en el calendario.",
+                            color = TextoSecundario, style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            }
+
             if (fatigaAlta) {
                 item {
                     Row(
@@ -131,6 +150,7 @@ fun DayDetailScreen(
                         Button(
                             onClick = { viewModel.toggleActividadHecha(dayId, plan.size) },
                             modifier = Modifier.fillMaxWidth(),
+                            enabled = esHoy,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (actividadHecha) VerdeOk else SuperficieClara
                             )
@@ -204,6 +224,7 @@ fun DayDetailScreen(
                 ExerciseRow(
                     item = item,
                     hecho = completados.contains(index),
+                    habilitado = esHoy,
                     onToggleHecho = { viewModel.toggleExerciseDone(dayId, index, plan.size, mostrandoSoloActividad) }
                 )
             }
@@ -212,16 +233,17 @@ fun DayDetailScreen(
                 Button(
                     onClick = { mostrarTracking = true },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = esHoy,
                     colors = ButtonDefaults.buttonColors(containerColor = AzulAccion)
                 ) {
                     Icon(Icons.Filled.MonitorHeart, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Registrar métricas del reloj")
+                    Text(if (esHoy) "Registrar métricas del reloj" else "Disponible solo hoy")
                 }
             }
 
             tracking?.let { t ->
-                if (t.fcAvg != null || t.pasos != null || t.calorias != null || t.fcReposo != null || t.sinActividad) {
+                if (esHoy && (t.fcAvg != null || t.pasos != null || t.calorias != null || t.fcReposo != null || t.sinActividad)) {
                     item {
                         MetricsSummary(
                             t.fcReposo, t.fcAvg, t.fcMax, t.calorias, t.tiempoMin,
@@ -243,7 +265,7 @@ fun DayDetailScreen(
 }
 
 @Composable
-private fun ExerciseRow(item: PlanItem, hecho: Boolean, onToggleHecho: () -> Unit) {
+private fun ExerciseRow(item: PlanItem, hecho: Boolean, habilitado: Boolean, onToggleHecho: () -> Unit) {
     val ejercicio = RoutineData.exerciseById(item.idLib)
     var expandido by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -331,6 +353,7 @@ private fun ExerciseRow(item: PlanItem, hecho: Boolean, onToggleHecho: () -> Uni
         Button(
             onClick = onToggleHecho,
             modifier = Modifier.fillMaxWidth(),
+            enabled = habilitado,
             colors = ButtonDefaults.buttonColors(
                 containerColor = if (hecho) VerdeOk else SuperficieClara
             )
@@ -340,7 +363,7 @@ private fun ExerciseRow(item: PlanItem, hecho: Boolean, onToggleHecho: () -> Uni
                 contentDescription = null
             )
             Spacer(Modifier.width(8.dp))
-            Text(if (hecho) "Realizado" else "Marcar como realizado")
+            Text(if (hecho) "Realizado" else if (habilitado) "Marcar como realizado" else "Disponible solo hoy")
         }
     }
 }
