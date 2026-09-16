@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -262,7 +263,14 @@ private fun ExerciseRow(item: PlanItem, hecho: Boolean, onToggleHecho: () -> Uni
                         .background(CategoryVisuals.colorFor(ejercicio.categoria).copy(alpha = 0.18f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (ejercicio.imagenUrl != null) {
+                    if (CategoryVisuals.localDrawableFor(ejercicio.id) != null) {
+                        Icon(
+                            painter = painterResource(CategoryVisuals.localDrawableFor(ejercicio.id)!!),
+                            contentDescription = ejercicio.nombre,
+                            tint = CategoryVisuals.colorFor(ejercicio.categoria),
+                            modifier = Modifier.padding(6.dp)
+                        )
+                    } else if (ejercicio.imagenUrl != null) {
                         AsyncImage(
                             model = ejercicio.imagenUrl,
                             contentDescription = ejercicio.nombre,

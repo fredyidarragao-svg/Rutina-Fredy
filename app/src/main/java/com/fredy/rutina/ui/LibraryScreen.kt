@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -91,7 +92,14 @@ private fun ExerciseCard(ex: Exercise) {
                     .background(CategoryVisuals.colorFor(ex.categoria).copy(alpha = 0.18f)),
                 contentAlignment = Alignment.Center
             ) {
-                if (ex.imagenUrl != null) {
+                if (CategoryVisuals.localDrawableFor(ex.id) != null) {
+                    Icon(
+                        painter = painterResource(CategoryVisuals.localDrawableFor(ex.id)!!),
+                        contentDescription = ex.nombre,
+                        tint = CategoryVisuals.colorFor(ex.categoria),
+                        modifier = Modifier.padding(6.dp)
+                    )
+                } else if (ex.imagenUrl != null) {
                     AsyncImage(
                         model = ex.imagenUrl,
                         contentDescription = ex.nombre,
