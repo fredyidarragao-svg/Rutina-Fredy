@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.Warning
@@ -27,7 +28,8 @@ import com.fredy.rutina.ui.theme.*
 fun WeekScreen(
     viewModel: AppViewModel,
     onDayClick: (String) -> Unit,
-    onLibraryClick: () -> Unit
+    onLibraryClick: () -> Unit,
+    onHistoryClick: () -> Unit
 ) {
     val fatigaAlta by viewModel.fatigaAlta.collectAsState()
     var mostrarTracking by remember { mutableStateOf(false) }
@@ -37,6 +39,9 @@ fun WeekScreen(
             TopAppBar(
                 title = { Text("Rutina de Fredy", fontWeight = FontWeight.Bold) },
                 actions = {
+                    IconButton(onClick = onHistoryClick) {
+                        Icon(Icons.Filled.CalendarMonth, contentDescription = "Continuidad")
+                    }
                     IconButton(onClick = onLibraryClick) {
                         Icon(Icons.Filled.LibraryBooks, contentDescription = "Biblioteca de ejercicios")
                     }

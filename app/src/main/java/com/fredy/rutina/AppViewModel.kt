@@ -235,6 +235,18 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private val _historialMes = MutableStateFlow<Map<String, TrackingEntity>>(emptyMap())
+    val historialMes: StateFlow<Map<String, TrackingEntity>> = _historialMes.asStateFlow()
+
+    /** Carga el historial de un mes (yyyy-MM) para pintar el calendario. */
+    fun cargarHistorialMes(yearMonth: java.time.YearMonth) {
+        viewModelScope.launch {
+            val inicio = yearMonth.atDay(1).format(fechaFormatter)
+            val fin = yearMonth.atEndOfMonth().format(fechaFormatter)
+            _historialMes.value = dao.getEntreFechas(inicio, fin).associateBy { it.fecha }
+        }
+    }
+
     fun refreshHealthPermissions() {
         viewModelScope.launch {
             _hasHealthPermissions.value = runCatching { healthConnect.hasAllPermissions() }.getOrDefault(false)

@@ -15,6 +15,9 @@ interface TrackingDao {
     @Query("SELECT * FROM tracking WHERE fecha = :fecha LIMIT 1")
     suspend fun getByFecha(fecha: String): TrackingEntity?
 
+    @Query("SELECT * FROM tracking WHERE fecha BETWEEN :inicio AND :fin")
+    suspend fun getEntreFechas(inicio: String, fin: String): List<TrackingEntity>
+
     @Query("SELECT * FROM tracking ORDER BY fecha DESC LIMIT :limit")
     suspend fun getRecent(limit: Int): List<TrackingEntity>
 

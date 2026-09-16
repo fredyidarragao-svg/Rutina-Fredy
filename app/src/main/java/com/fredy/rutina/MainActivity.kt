@@ -37,7 +37,14 @@ fun RutinaFredyApp(viewModel: AppViewModel) {
             WeekScreen(
                 viewModel = viewModel,
                 onDayClick = { dayId -> navController.navigate("dia/$dayId") },
-                onLibraryClick = { navController.navigate("biblioteca") }
+                onLibraryClick = { navController.navigate("biblioteca") },
+                onHistoryClick = { navController.navigate("historial") }
+            )
+        }
+        composable("historial") {
+            HistoryScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() }
             )
         }
         composable("dia/{dayId}") { backStackEntry ->
