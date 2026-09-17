@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.fredy.rutina.ui.DayDetailScreen
 import com.fredy.rutina.ui.HistoryScreen
 import com.fredy.rutina.ui.LibraryScreen
+import com.fredy.rutina.ui.SettingsScreen
 import com.fredy.rutina.ui.WeekScreen
 import com.fredy.rutina.ui.theme.RutinaFredyTheme
 
@@ -39,7 +40,14 @@ fun RutinaFredyApp(viewModel: AppViewModel) {
                 viewModel = viewModel,
                 onDayClick = { dayId -> navController.navigate("dia/$dayId") },
                 onLibraryClick = { navController.navigate("biblioteca") },
-                onHistoryClick = { navController.navigate("historial") }
+                onHistoryClick = { navController.navigate("historial") },
+                onSettingsClick = { navController.navigate("ajustes") }
+            )
+        }
+        composable("ajustes") {
+            SettingsScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() }
             )
         }
         composable("historial") {

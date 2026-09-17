@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.MonitorHeart
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -29,7 +30,8 @@ fun WeekScreen(
     viewModel: AppViewModel,
     onDayClick: (String) -> Unit,
     onLibraryClick: () -> Unit,
-    onHistoryClick: () -> Unit
+    onHistoryClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     val fatigaAlta by viewModel.fatigaAlta.collectAsState()
     var mostrarTracking by remember { mutableStateOf(false) }
@@ -44,6 +46,9 @@ fun WeekScreen(
                     }
                     IconButton(onClick = onLibraryClick) {
                         Icon(Icons.Filled.LibraryBooks, contentDescription = "Biblioteca de ejercicios")
+                    }
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(Icons.Filled.Settings, contentDescription = "Ajustes")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = FondoOscuro)

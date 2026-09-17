@@ -247,6 +247,16 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /** Borra por completo el historial guardado (todos los registros de todos los días). */
+    fun borrarHistorialCompleto() {
+        viewModelScope.launch {
+            dao.borrarTodo()
+            _todayTracking.value = null
+            _historialMes.value = emptyMap()
+            _fatigaAlta.value = false
+        }
+    }
+
     fun refreshHealthPermissions() {
         viewModelScope.launch {
             _hasHealthPermissions.value = runCatching { healthConnect.hasAllPermissions() }.getOrDefault(false)

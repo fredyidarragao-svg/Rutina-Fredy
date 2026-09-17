@@ -15,6 +15,9 @@ interface TrackingDao {
     @Query("SELECT * FROM tracking WHERE fecha = :fecha LIMIT 1")
     suspend fun getByFecha(fecha: String): TrackingEntity?
 
+    @Query("DELETE FROM tracking")
+    suspend fun borrarTodo()
+
     @Query("SELECT * FROM tracking WHERE fecha BETWEEN :inicio AND :fin")
     suspend fun getEntreFechas(inicio: String, fin: String): List<TrackingEntity>
 
